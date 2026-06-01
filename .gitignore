@@ -47,6 +47,12 @@ Thumbs.db
 # Logs
 *.log
 
+# Debug HTML files
+**/debug_*.html
+
+# Ignore all debug HTML files inside backend
+backend/debug_*.html
+
 # SQLite databases
 *.sqlite3
 *.db
