@@ -1,0 +1,12 @@
+pandas
+beautifulsoup4
+playwright
+requests
+ddgs
+rapidfuzz
+openpyxl
+fastapi
+uvicorn
+pydantic
+python-multipart
+
