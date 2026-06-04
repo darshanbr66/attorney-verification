@@ -1,31 +1,42 @@
+import re
+
 from app.services.search_service import search_attorney
 from app.services.scraping_service import scrape_attorney_profile
 from app.utils.query_generator import generate_search_queries
 from app.services.verification_service import verify_attorney
-
 
 def extract_organization_from_title(title):
 
     if not title:
         return ""
 
-    separators = [
-        "|",
-        "-",
-        "—",
-        ","
+    parts = [
+        part.strip()
+        for part in re.split(r"[|\-—]", title)
     ]
 
-    for sep in separators:
+    for part in parts:
 
-        if sep in title:
+        lower_part = part.lower()
 
-            parts = title.split(sep)
+        if any(
+            keyword in lower_part
+            for keyword in [
+                "patent",
+                "trademark",
+                "law firm",
+                "intellectual property"
+            ]
+        ):
+            continue
 
-            if len(parts) > 1:
-                return parts[-1].strip()
+        # Skip attorney names
+        if len(part.split()) >= 3:
+            continue
 
-    return title.strip()
+        return part
+
+    return ""
 
 
 def verify_single_attorney(
@@ -34,6 +45,12 @@ def verify_single_attorney(
     organization="",
     city=""
 ):
+    import time
+
+    print("\n" + "=" * 60)
+    print("NEW REQUEST STARTED")
+    print("TIME:", time.strftime("%H:%M:%S"))
+    print("=" * 60)
 
     best_result = None
     best_confidence = 0
@@ -81,6 +98,10 @@ def verify_single_attorney(
         if not urls:
             continue
 
+        # Optional:
+        # Only check first few URLs
+        urls = urls[:2]
+
         for url in urls:
 
             try:
@@ -123,12 +144,16 @@ def verify_single_attorney(
                     uspto_name=name,
                     uspto_org=organization,
                     found_name=name,
-                    found_org=found_org
+                    found_org=organization
                 )
 
                 confidence = verification[
                     "confidence"
                 ]
+
+                # -----------------------------
+                # BONUS CONFIDENCE
+                # -----------------------------
 
                 if email != "Not Found":
                     confidence += 3
@@ -141,39 +166,65 @@ def verify_single_attorney(
                     100
                 )
 
+                print(
+                    f"CONFIDENCE: {confidence}"
+                )
+
+                result = {
+
+                    "name": name,
+
+                    "reg_no": reg_no,
+
+                    "organization": organization,
+
+                    "city": city,
+
+                    "email": email,
+
+                    "phone": phone,
+
+                    "source_url": url,
+
+                    "confidence": round(
+                        confidence,
+                        2
+                    ),
+
+                    "page_title": title,
+
+                    "detected_organization":
+                    found_org,
+
+                    "bio": bio[:1000]
+
+                }
+
+                # -----------------------------
+                # HIGH CONFIDENCE
+                # RETURN IMMEDIATELY
+                # -----------------------------
+
+                if confidence >= 75:
+
+                    print(
+                        "\nHIGH CONFIDENCE MATCH FOUND"
+                    )
+
+                    print("\nRESULT:")
+                    print(result)
+
+                    return result
+
+                # -----------------------------
+                # SAVE BEST RESULT
+                # -----------------------------
+
                 if confidence > best_confidence:
 
                     best_confidence = confidence
 
-                    best_result = {
-
-                        "name": name,
-
-                        "reg_no": reg_no,
-
-                        "organization": organization,
-
-                        "city": city,
-
-                        "email": email,
-
-                        "phone": phone,
-
-                        "source_url": url,
-
-                        "confidence": round(
-                            confidence,
-                            2
-                        ),
-
-                        "page_title": title,
-
-                        "detected_organization":
-                        found_org,
-
-                        "bio": bio[:1000]
-
-                    }
+                    best_result = result
 
             except Exception as e:
 
@@ -183,11 +234,19 @@ def verify_single_attorney(
 
                 continue
 
+    # ---------------------------------
+    # RETURN BEST MATCH
+    # ---------------------------------
+
     if best_result:
 
         print("\nBEST MATCH FOUND")
 
         return best_result
+
+    # ---------------------------------
+    # NO MATCH
+    # ---------------------------------
 
     return {
 

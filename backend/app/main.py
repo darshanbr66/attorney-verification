@@ -47,3 +47,10 @@ def health_check():
     return {
         "status": "healthy"
     }
+@app.get("/darshan")
+def darshan():
+
+    return {
+        "status": "Greetings from Darshan!",
+        "message": "Welcome to the AI Attorney Verification System API"
+    }

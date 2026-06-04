@@ -14,36 +14,65 @@ const Home = () => {
 
   const verifyAttorney = async (data) => {
 
-    try {
+  // Name validation
 
-      setLoading(true);
+  if (!data.name.trim()) {
 
-      const response =
-        await API.post(
-          "/verify-attorney",
-          data
-        );
+    toast.error(
+      "Attorney Name is required"
+    );
 
-      setResult(response.data);
+    return;
+  }
 
-      toast.success(
-        "Verification Complete"
+  // Organization OR City validation
+
+  if (
+    !data.organization.trim() &&
+    !data.city.trim()
+  ) {
+
+    toast.error(
+      "Please provide Organization or City"
+    );
+
+    return;
+  }
+
+  try {
+
+    setLoading(true);
+
+    setResult(null);
+
+    const response =
+      await API.post(
+        "/verify-attorney",
+        data
       );
 
-    } catch (error) {
+    setResult(
+      response.data
+    );
 
-      toast.error(
-        "Verification Failed"
-      );
+    toast.success(
+      "Verification Complete"
+    );
 
-      console.error(error);
+  } catch (error) {
 
-    } finally {
+    toast.error(
+      "Verification Failed"
+    );
 
-      setLoading(false);
+    console.error(error);
 
-    }
-  };
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   return (
 
@@ -181,10 +210,9 @@ const Home = () => {
             "
           >
             Search attorney records using
-            attorney name,
-            registration number,
-            organization,
-            and city.
+            Attorney Name and either
+            Organization or City for
+            more accurate verification.
           </p>
 
         </div>

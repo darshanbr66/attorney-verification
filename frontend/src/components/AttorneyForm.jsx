@@ -1,5 +1,5 @@
-
 // frontend/src/components/AttorneyForm.jsx
+
 import { useState } from "react";
 
 const AttorneyForm = ({
@@ -49,6 +49,8 @@ const AttorneyForm = ({
 
       <div className="space-y-5">
 
+        {/* Attorney Name */}
+
         <input
           type="text"
           name="name"
@@ -67,10 +69,12 @@ const AttorneyForm = ({
           "
         />
 
+        {/* Registration Number */}
+
         <input
           type="text"
           name="reg_no"
-          placeholder="Registration Number"
+          placeholder="Registration Number (Optional)"
           value={form.reg_no}
           onChange={handleChange}
           className="
@@ -85,10 +89,12 @@ const AttorneyForm = ({
           "
         />
 
+        {/* Organization */}
+
         <input
           type="text"
           name="organization"
-          placeholder="Organization"
+          placeholder="Organization (Required if City is empty)"
           value={form.organization}
           onChange={handleChange}
           className="
@@ -103,10 +109,12 @@ const AttorneyForm = ({
           "
         />
 
+        {/* City */}
+
         <input
           type="text"
           name="city"
-          placeholder="City (Optional)"
+          placeholder="City (Required if Organization is empty)"
           value={form.city}
           onChange={handleChange}
           className="
@@ -120,6 +128,29 @@ const AttorneyForm = ({
             outline-none
           "
         />
+
+        {/* Helper Text */}
+
+        <div
+          className="
+            text-sm
+            text-gray-400
+            leading-relaxed
+          "
+        >
+          Attorney Name is required.
+          Please provide either
+          <span className="text-cyan-400">
+            {" "}Organization
+          </span>
+          {" "}or
+          <span className="text-cyan-400">
+            {" "}City
+          </span>
+          .
+        </div>
+
+        {/* Buttons */}
 
         <div
           className="
@@ -143,9 +174,12 @@ const AttorneyForm = ({
               font-semibold
               hover:bg-cyan-300
               transition
+              disabled:opacity-50
             "
           >
-            Verify Attorney
+            {loading
+              ? "Verifying..."
+              : "Verify Attorney"}
           </button>
 
           <button

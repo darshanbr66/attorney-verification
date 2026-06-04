@@ -102,7 +102,11 @@ def search_attorney(
         "findlaw.com",
         "superlawyers.com",
         "lawyer.com",
-        "chambers.com"
+        "chambers.com",
+        "justia.com",
+        "lawyers.com",
+        "avvo.com",
+        "martindale.com",
 
     ]
 

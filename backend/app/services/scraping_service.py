@@ -96,7 +96,8 @@ def extract_vcard_email(
         with sync_playwright() as p:
 
             browser = p.chromium.launch(
-                headless=True
+                headless=True,
+                channel="chrome"
             )
 
             context = browser.new_context(
@@ -112,11 +113,11 @@ def extract_vcard_email(
 
             page.goto(
                 attorney_url,
-                timeout=60000
+                timeout=15000
             )
 
             page.wait_for_load_state("networkidle")
-            page.wait_for_timeout(3000)
+            # page.wait_for_timeout(3000)
 
             possible_selectors = [
 
@@ -224,7 +225,8 @@ def scrape_attorney_profile(
         with sync_playwright() as p:
 
             browser = p.chromium.launch(
-                headless=True
+                headless=True,
+                channel="chrome"
             )
 
             context = browser.new_context(
@@ -246,11 +248,11 @@ def scrape_attorney_profile(
 
             page.goto(
                 url,
-                timeout=60000
+                timeout=15000
             )
 
             page.wait_for_load_state("networkidle")
-            page.wait_for_timeout(3000)
+            # page.wait_for_timeout(3000)
 
             html = page.content()
             with open(
