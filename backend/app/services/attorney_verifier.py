@@ -1,7 +1,10 @@
 import re
 
 from app.services.search_service import search_attorney
-from app.services.scraping_service import scrape_attorney_profile
+from app.services.scraping_service import (
+    scrape_attorney_profile,
+    normalize_organization
+)
 from app.utils.query_generator import generate_search_queries
 from app.services.verification_service import verify_attorney
 
@@ -19,25 +22,29 @@ def extract_organization_from_title(title):
 
         lower_part = part.lower()
 
+        # Skip obvious attorney names
+        if "." in part:
+            continue
+
+        # Skip legal topic text
         if any(
             keyword in lower_part
             for keyword in [
                 "patent",
                 "trademark",
-                "law firm",
-                "intellectual property"
+                "intellectual property",
+                "people",
+                "professionals"
             ]
         ):
             continue
 
-        # Skip attorney names
-        if len(part.split()) >= 3:
+        if len(part) < 3:
             continue
 
         return part
 
     return ""
-
 
 def verify_single_attorney(
     name,
@@ -133,11 +140,27 @@ def verify_single_attorney(
                     "bio",
                     ""
                 )
+                detected_city = scraped.get(
+                    "city",
+                    ""
+                )
 
-                found_org = (
-                    extract_organization_from_title(
-                        title
+                found_org = scraped.get(
+                    "organization",
+                    ""
+                )
+
+                if not found_org:
+
+                    found_org = (
+                        extract_organization_from_title(
+                            title
+                        )
                     )
+
+                found_org = normalize_organization(
+                    found_org,
+                    url
                 )
 
                 verification = verify_attorney(
@@ -176,9 +199,9 @@ def verify_single_attorney(
 
                     "reg_no": reg_no,
 
-                    "organization": organization,
+                    "organization": organization if organization else found_org,
 
-                    "city": city,
+                    "city": detected_city if detected_city else city,
 
                     "email": email,
 

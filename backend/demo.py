@@ -105,6 +105,16 @@ for index, row in df.iterrows():
     print("Organization:", row["organization"])
     print("Email:", profile_data["email"])
     print("Phone:", profile_data["phone"])
+    print("City:", profile_data.get(
+        "city",
+        ""
+    ))
+
+    print("\nPAGE TITLE:")
+    print(profile_data["title"])
+
+    print("\nBIO:")
+    print(profile_data["bio"][:500])
 
     # -----------------------------------
     # VERIFICATION
@@ -130,15 +140,37 @@ for index, row in df.iterrows():
 
         "organization": row["organization"],
 
-        "email": profile_data["email"],
+        "city": profile_data.get(
+            "city",
+            ""
+        ),
 
-        "phone": profile_data["phone"],
+        "email": profile_data.get(
+            "email",
+            "Not Found"
+        ),
 
-        "bio": profile_data["bio"][:1500],
+        "phone": profile_data.get(
+            "phone",
+            "Not Found"
+        ),
+
+        "page_title": profile_data.get(
+            "title",
+            ""
+        ),
+
+        "bio": profile_data.get(
+            "bio",
+            ""
+        )[:3000],
 
         "source_url": best_url,
 
-        "confidence": result["confidence"]
+        "confidence": result.get(
+            "confidence",
+            0
+        )
 
     })
 

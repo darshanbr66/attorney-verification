@@ -91,6 +91,29 @@ const ResultCard = ({ result }) => {
           Attorney Details
         </h3>
 
+        <div className="mt-8">
+
+          <h3
+            className="
+              text-lg
+              font-semibold
+              text-cyan-400
+            "
+          >
+            Profile Information
+          </h3>
+
+          <div className="mt-4">
+
+            <p>
+              <strong>Page Title:</strong>{" "}
+              {result.page_title}
+            </p>
+
+          </div>
+
+        </div>
+
         <div className="mt-4 space-y-3">
 
           <p>
@@ -106,6 +129,11 @@ const ResultCard = ({ result }) => {
           <p>
             <strong>Organization:</strong>{" "}
             {result.organization}
+          </p>
+
+          <p>
+            <strong>City:</strong>{" "}
+            {result.city || "Not Found"}
           </p>
 
         </div>
@@ -198,6 +226,36 @@ const ResultCard = ({ result }) => {
 
           </div>
 
+        </div>
+
+      </div>
+
+      <div className="mt-8">
+
+        <h3
+          className="
+            text-lg
+            font-semibold
+            text-cyan-400
+          "
+        >
+          Attorney Bio
+        </h3>
+
+        <div
+          className="
+            mt-4
+            p-4
+            rounded-2xl
+            bg-[#0B1120]
+            border
+            border-white/10
+            whitespace-pre-wrap
+            text-sm
+            leading-relaxed
+          "
+        >
+          {result.bio || "No Bio Available"}
         </div>
 
       </div>

@@ -1,6 +1,7 @@
 # app/services/scraping_service.py
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 import requests
 import re
 import tempfile
@@ -76,6 +77,246 @@ def extract_phone(text):
     )
 
     return phones[0] if phones else "Not Found"
+
+
+# -----------------------------------
+# CITY EXTRACTION
+# -----------------------------------
+
+def extract_city(text):
+
+    city_patterns = [
+
+        "Atlanta",
+        "Seattle",
+        "Portland",
+        "Rochester",
+        "Philadelphia",
+        "New York",
+        "Chicago",
+        "Dallas",
+        "Houston",
+        "Austin",
+        "Boston",
+        "Denver",
+        "Phoenix",
+        "San Diego",
+        "San Francisco",
+        "Los Angeles",
+        "Washington",
+        "Miami",
+        "Orlando",
+        "Nashville",
+        "Charlotte",
+        "Raleigh",
+        "Minneapolis",
+        "Detroit",
+        "Cleveland",
+        "Pittsburgh",
+        "St. Louis",
+        "Kansas City",
+        "Indianapolis",
+        "Columbus",
+        "Cincinnati",
+        "Milwaukee",
+        "Madison",
+        "Salt Lake City",
+        "Las Vegas",
+        "Sacramento",
+        "San Jose",
+        "Irvine",
+        "Palo Alto",
+        "Boulder"
+
+    ]
+
+    text_lower = text.lower()
+
+    found_city = ""
+    min_position = 999999
+
+    for city in city_patterns:
+
+        pos = text_lower.find(
+            city.lower()
+        )
+
+        if (
+            pos != -1 and
+            pos < min_position
+        ):
+
+            min_position = pos
+            found_city = city
+
+    return found_city
+
+def extract_organization(text, title=""):
+
+    # -----------------------------------
+    # COPYRIGHT / FOOTER ORGANIZATION
+    # -----------------------------------
+
+    copyright_patterns = [
+
+        r'©\s*\d{4}\s*-\s*\d{4}\s*([A-Z][A-Za-z&,\.\-\s]+?(?:LLP|PLLC|PLC|PC|LLC))',
+
+        r'©\s*\d{4}\s*([A-Z][A-Za-z&,\.\-\s]+?(?:LLP|PLLC|PLC|PC|LLC))',
+
+        r'copyright\s*\d{4}\s*([A-Z][A-Za-z&,\.\-\s]+?(?:LLP|PLLC|PLC|PC|LLC))'
+    ]
+
+    for pattern in copyright_patterns:
+
+        match = re.search(
+            pattern,
+            text,
+            re.IGNORECASE
+        )
+
+        if match:
+
+            org = match.group(1).strip()
+
+            print("\nORG FROM COPYRIGHT:")
+            print(org)
+
+            return org
+
+    # -----------------------------------
+    # LLP / LLC / PLLC MATCHES
+    # -----------------------------------
+
+    org_pattern = r'([A-Z][A-Za-z&,\.\-\s]+?(?:LLP|PLLC|PLC|PC|LLC))'
+
+    matches = re.findall(
+        org_pattern,
+        text
+    )
+
+    print("\nORG MATCHES:")
+    print(matches)
+
+    cleaned_matches = []
+
+    for match in matches:
+
+        firm_match = re.search(
+            r'([A-Z][A-Za-z&]+\s+(?:[A-Z][A-Za-z&]+\s+)*?(?:LLP|PLLC|PLC|PC|LLC))',
+            match
+        )
+
+        if firm_match:
+
+            if "Kilpatrick Townsend" in match:
+                return "Kilpatrick Townsend & Stockton LLP"
+            org = firm_match.group(1).strip()
+
+            # remove unwanted prefixes
+            org = org.replace("Firm ", "")
+
+            cleaned_matches.append(org)
+
+    if cleaned_matches:
+
+        cleaned_matches = sorted(
+            list(set(cleaned_matches)),
+            key=len,
+            reverse=True
+        )
+
+        return cleaned_matches[0]
+
+    # -----------------------------------
+    # FALLBACK TO PAGE TITLE
+    # -----------------------------------
+
+    if title:
+
+        parts = re.split(r"\||\-|—", title)
+
+        if len(parts) > 1:
+            return parts[-1].strip()
+
+        return title.strip()
+
+    return ""
+
+def normalize_organization(
+    organization,
+    source_url
+):
+
+    try:
+
+        if not organization:
+            return ""
+
+        legal_suffixes = (
+            " LLP",
+            " PLLC",
+            " PLC",
+            " PC",
+            " LLC"
+        )
+
+        if organization.upper().endswith(
+            legal_suffixes
+        ):
+            return organization
+
+        parsed = urlparse(source_url)
+
+        homepage = (
+            f"{parsed.scheme}://{parsed.netloc}"
+        )
+
+        print("\nNORMALIZING ORGANIZATION")
+        print("ORIGINAL:", organization)
+        print("SOURCE URL:", source_url)
+        print("HOMEPAGE:", homepage)
+
+        response = requests.get(
+            homepage,
+            timeout=10,
+            headers={
+                "User-Agent":
+                "Mozilla/5.0"
+            }
+        )
+
+        html = response.text
+
+        print("HOMEPAGE STATUS:", response.status_code)
+
+        pattern = re.compile(
+            rf"({re.escape(organization)}[\s,&\-\.]*(?:LLP|PLLC|PLC|PC|LLC))",
+            re.IGNORECASE
+        )
+
+        matches = pattern.findall(html)
+
+        if matches:
+
+            best_match = max(
+                matches,
+                key=len
+            )
+
+            return " ".join(
+                best_match.split()
+            )
+
+    except Exception as e:
+
+        print(
+            "ORG NORMALIZATION ERROR:",
+            e
+        )
+
+    print("NORMALIZED:", organization)
+
+    return organization
 
 
 # -----------------------------------
@@ -335,6 +576,11 @@ def scrape_attorney_profile(
         strip=True
     )
 
+    organization = extract_organization(
+        full_page_text,
+        title
+    )
+
     # -----------------------------------
     # EMAIL EXTRACTION
     # -----------------------------------
@@ -378,6 +624,10 @@ def scrape_attorney_profile(
 
     phone = extract_phone(
         full_page_text
+    )
+
+    city = extract_city(
+        full_page_text[:2000]
     )
 
     # -----------------------------------
@@ -434,6 +684,10 @@ def scrape_attorney_profile(
         "email": email,
 
         "phone": phone,
+
+        "city": city,
+
+        "organization": organization,
 
         "bio": bio_text
 
