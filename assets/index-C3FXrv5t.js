@@ -259,7 +259,7 @@ to {
   > * {
     pointer-events: auto;
   }
-`,oi=16,si=({reverseOrder:e,position:t=`top-center`,toastOptions:n,gutter:r,children:i,toasterId:a,containerStyle:o,containerClassName:s})=>{let{toasts:c,handlers:l}=Pr(n,a);return N.createElement(`div`,{"data-rht-toaster":a||``,style:{position:`fixed`,zIndex:9999,top:oi,left:oi,right:oi,bottom:oi,pointerEvents:`none`,...o},className:s,onMouseEnter:l.startPause,onMouseLeave:l.endPause},c.map(n=>{let a=n.position||t,o=ii(a,l.calculateOffset(n,{reverseOrder:e,gutter:r,defaultPosition:t}));return N.createElement(ri,{id:n.id,key:n.id,onHeightUpdate:l.updateHeight,className:n.visible?ai:``,style:o},n.type===`custom`?gr(n.message,n):i?i(n):N.createElement(ni,{toast:n,position:a}))}))},ci=F,li=({result:e})=>{let t=(e,t)=>{navigator.clipboard.writeText(e),F.success(`${t} copied`)};return(0,P.jsxs)(`div`,{className:`\r
+`,oi=16,si=({reverseOrder:e,position:t=`top-center`,toastOptions:n,gutter:r,children:i,toasterId:a,containerStyle:o,containerClassName:s})=>{let{toasts:c,handlers:l}=Pr(n,a);return N.createElement(`div`,{"data-rht-toaster":a||``,style:{position:`fixed`,zIndex:9999,top:oi,left:oi,right:oi,bottom:oi,pointerEvents:`none`,...o},className:s,onMouseEnter:l.startPause,onMouseLeave:l.endPause},c.map(n=>{let a=n.position||t,o=ii(a,l.calculateOffset(n,{reverseOrder:e,gutter:r,defaultPosition:t}));return N.createElement(ri,{id:n.id,key:n.id,onHeightUpdate:l.updateHeight,className:n.visible?ai:``,style:o},n.type===`custom`?gr(n.message,n):i?i(n):N.createElement(ni,{toast:n,position:a}))}))},ci=F,li=({result:e})=>{let t=(e,t)=>{navigator.clipboard.writeText(e),F.success(`${t} copied`)},n=()=>e.confidence>=90?`bg-green-500`:e.confidence>=70?`bg-yellow-500`:`bg-red-500`,r=e=>{if(!e)return!1;let t=String(e).trim().toLowerCase();return t!==`not found`&&t!==`na`&&t!==`n/a`};return(0,P.jsxs)(`div`,{className:`\r
         mt-10\r
         bg-white/[0.03]\r
         border\r
@@ -282,52 +282,50 @@ to {
             rounded-full
             text-black
             font-bold
-            ${e.confidence>=90?`bg-green-500`:e.confidence>=70?`bg-yellow-500`:`bg-red-500`}
+            ${n()}
           `,children:[e.confidence,`% Confidence`]})]}),(0,P.jsxs)(`div`,{className:`mt-8`,children:[(0,P.jsx)(`h3`,{className:`\r
             text-lg\r
             font-semibold\r
             text-cyan-400\r
-          `,children:`Attorney Details`}),(0,P.jsxs)(`div`,{className:`mt-4 space-y-3`,children:[(0,P.jsxs)(`p`,{children:[(0,P.jsx)(`strong`,{children:`Name:`}),` `,e.name]}),(0,P.jsxs)(`p`,{children:[(0,P.jsx)(`strong`,{children:`Registration:`}),` `,e.reg_no]}),(0,P.jsxs)(`p`,{children:[(0,P.jsx)(`strong`,{children:`Organization:`}),` `,e.organization]})]})]}),(0,P.jsxs)(`div`,{className:`mt-8`,children:[(0,P.jsx)(`h3`,{className:`\r
-            text-lg\r
-            font-semibold\r
-            text-cyan-400\r
-          `,children:`Contact Information`}),(0,P.jsxs)(`div`,{className:`mt-4 space-y-4`,children:[(0,P.jsxs)(`div`,{className:`\r
-              flex\r
-              justify-between\r
-              items-center\r
-              flex-wrap\r
-              gap-3\r
-            `,children:[(0,P.jsx)(`span`,{children:e.email}),(0,P.jsx)(`button`,{onClick:()=>t(e.email,`Email`),className:`\r
-                px-4\r
-                py-2\r
-                rounded-xl\r
-                bg-cyan-400\r
-                text-black\r
-                font-semibold\r
-              `,children:`Copy`})]}),(0,P.jsxs)(`div`,{className:`\r
-              flex\r
-              justify-between\r
-              items-center\r
-              flex-wrap\r
-              gap-3\r
-            `,children:[(0,P.jsx)(`span`,{children:e.phone}),(0,P.jsx)(`button`,{onClick:()=>t(e.phone,`Phone`),className:`\r
-                px-4\r
-                py-2\r
-                rounded-xl\r
-                bg-cyan-400\r
-                text-black\r
-                font-semibold\r
-              `,children:`Copy`})]})]})]}),(0,P.jsx)(`div`,{className:`mt-8`,children:(0,P.jsx)(`a`,{href:e.source_url,target:`_blank`,rel:`noreferrer`,className:`\r
-            inline-flex\r
-            px-5\r
-            py-3\r
-            rounded-2xl\r
-            border\r
-            border-white/10\r
-            bg-white/[0.04]\r
-            hover:bg-white/[0.08]\r
-            transition\r
-          `,children:`Open Source URL →`})})]})},ui=()=>{let[e,t]=(0,N.useState)(null),[n,r]=(0,N.useState)(!1);return(0,P.jsxs)(`div`,{className:`\r
+          `,children:`Attorney Details`}),(0,P.jsxs)(`div`,{className:`mt-4 space-y-3`,children:[r(e.name)&&(0,P.jsxs)(`p`,{children:[(0,P.jsx)(`strong`,{children:`Name:`}),` `,e.name]}),r(e.reg_no)&&(0,P.jsxs)(`p`,{children:[(0,P.jsx)(`strong`,{children:`Registration:`}),` `,e.reg_no]}),r(e.organization)&&(0,P.jsxs)(`p`,{children:[(0,P.jsx)(`strong`,{children:`Organization:`}),` `,e.organization]}),r(e.city)&&(0,P.jsxs)(`p`,{children:[(0,P.jsx)(`strong`,{children:`City:`}),` `,e.city]})]})]}),(r(e.email)||r(e.phone))&&(0,P.jsxs)(`div`,{className:`mt-8`,children:[(0,P.jsx)(`h3`,{className:`\r
+              text-lg\r
+              font-semibold\r
+              text-cyan-400\r
+            `,children:`Contact Information`}),(0,P.jsxs)(`div`,{className:`mt-4 space-y-4`,children:[r(e.email)&&(0,P.jsxs)(`div`,{className:`flex justify-between items-center flex-wrap gap-3`,children:[(0,P.jsx)(`span`,{children:e.email}),(0,P.jsx)(`button`,{onClick:()=>t(e.email,`Email`),className:`\r
+                    px-4\r
+                    py-2\r
+                    rounded-xl\r
+                    bg-cyan-400\r
+                    text-black\r
+                    font-semibold\r
+                  `,children:`Copy`})]}),r(e.phone)&&(0,P.jsxs)(`div`,{className:`flex justify-between items-center flex-wrap gap-3`,children:[(0,P.jsx)(`span`,{children:e.phone}),(0,P.jsx)(`button`,{onClick:()=>t(e.phone,`Phone`),className:`\r
+                    px-4\r
+                    py-2\r
+                    rounded-xl\r
+                    bg-cyan-400\r
+                    text-black\r
+                    font-semibold\r
+                  `,children:`Copy`})]})]})]}),(0,P.jsx)(`div`,{className:`mt-8`,children:r(e.bio)&&(0,P.jsxs)(`div`,{className:`mt-8`,children:[(0,P.jsx)(`h3`,{className:`text-lg font-semibold text-cyan-400`,children:`Attorney Bio`}),(0,P.jsx)(`div`,{className:`\r
+                mt-4\r
+                p-4\r
+                rounded-2xl\r
+                bg-[#0B1120]\r
+                border\r
+                border-white/10\r
+                whitespace-pre-wrap\r
+                text-sm\r
+                leading-relaxed\r
+              `,children:e.bio})]})}),r(e.source_url)&&(0,P.jsx)(`div`,{className:`mt-8`,children:(0,P.jsx)(`a`,{href:e.source_url,target:`_blank`,rel:`noreferrer`,className:`\r
+              inline-flex\r
+              px-5\r
+              py-3\r
+              rounded-2xl\r
+              border\r
+              border-white/10\r
+              bg-white/[0.04]\r
+              hover:bg-white/[0.08]\r
+              transition\r
+            `,children:`Open Source URL →`})})]})},ui=()=>{let[e,t]=(0,N.useState)(null),[n,r]=(0,N.useState)(!1);return(0,P.jsxs)(`div`,{className:`\r
       min-h-screen\r
       bg-[#020617]\r
       text-white\r
