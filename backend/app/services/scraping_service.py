@@ -338,7 +338,7 @@ def extract_vcard_email(
 
             browser = p.chromium.launch(
                 headless=True,
-                channel="chrome"
+                # channel="chrome"
             )
 
             context = browser.new_context(
@@ -467,7 +467,7 @@ def scrape_attorney_profile(
 
             browser = p.chromium.launch(
                 headless=True,
-                channel="chrome"
+                # channel="chrome"
             )
 
             context = browser.new_context(
